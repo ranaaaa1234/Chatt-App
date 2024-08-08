@@ -5,7 +5,7 @@ function Header () {
 
     return (
         <div>
-            <h1>hej</h1>
+            <h1>hej då</h1>
 
         </div>
     )
