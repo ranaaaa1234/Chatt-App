@@ -2,6 +2,9 @@
 // Importera nödvändiga paket
 const express = require('express');
 const mongoose = require('mongoose');
+const csrf = require('csurf');
+const cookieParser = require('cookie-parser');
+
 
 // Skapa en Express-applikation
 const app = express();
@@ -97,3 +100,15 @@ const userSchema = new mongoose.Schema({
     res.send('Hello, this is your Node.js server!');
   });
   
+  // Middleware for handling cookies
+app.use(cookieParser());
+
+// Middleware for CSRF protection
+const csrfProtection = csrf({ cookie: true });
+
+app.use(csrfProtection);
+
+// Route to retrieve CSRF token
+app.patch('/csrf', (req, res) => {
+  res.json({ csrfToken: req.csrfToken() });
+});

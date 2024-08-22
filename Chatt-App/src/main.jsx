@@ -9,9 +9,11 @@ import './index.css';
 const root = ReactDOM.createRoot(document.getElementById('root'));
 
 root.render(
-  <Router>
+  <React.StrictMode>
     <AuthProvider>
-      <App />
+      <Router>
+        <App />
+      </Router>
     </AuthProvider>
-  </Router>
+  </React.StrictMode>,
 );

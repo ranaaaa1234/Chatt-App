@@ -1,12 +1,25 @@
+
+html, 
 body {
-  font-family: monospace;
+  font-family: 'Lucida Sans', 'Lucida Sans Regular', 'Lucida Grande', 'Lucida Sans Unicode', Geneva, Verdana, sans-serif;
+  background-color: #ffffff;
+  height: 100%;
+  margin: 0 auto;
+  background-color: rgb(228, 228, 228);
 }
 
-
-
-header {
+.header-container {
   padding: 20px;
   font-size: 20px;
+  color: #342641;
+}
+
+#chatEmoji {
+  padding: 10px;
+}
+
+.logo {
+  display: flex;
 }
 
 .error {

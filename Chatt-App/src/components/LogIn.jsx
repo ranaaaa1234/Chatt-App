@@ -63,13 +63,13 @@ const LogIn = () => {
   };
 
   return (
+    <div className='formContent'><h2>User log in</h2>
 <div className="login-container">
-      <h2>Log in</h2>
 
       <form onSubmit={handleLogIn}>
       <div id='form-field'>
           <label htmlFor="username">Username:</label>
-          <input
+          <input 
             type="text"
             id="username"
             name="username"
@@ -82,7 +82,7 @@ const LogIn = () => {
         <div id='form-field'>
           <label htmlFor="password">Password:</label>
           <input
-            type=" password"
+            type="password"
             id="password"
             name="password"
             value={password}
@@ -100,7 +100,7 @@ const LogIn = () => {
           </div>
         <button id='login-btn' type="submit">Log in</button> {/* Submit button */}
       </form>
-    </div>
+    </div></div>
   );
 };
 

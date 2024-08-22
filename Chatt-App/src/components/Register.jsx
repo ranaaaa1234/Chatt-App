@@ -57,8 +57,10 @@ const Register = () => {
   };
 
   return (
+
+    <div className='formContent'><h2>Register</h2>
 <div className="register-container">
-      <h2>Register</h2>
+      
       <form onSubmit={handleRegister}>
         <div id='form-field'>
           <label htmlFor="register-username">Username:</label>
@@ -103,7 +105,7 @@ const Register = () => {
         </svg>{error}</div>} {/* Show error message if any */}
         <button id='register-btn' type="submit">Register</button> {/* Submit button */}
       </form>
-    </div>
+    </div></div>
   );
 };
 
