@@ -1,4 +1,5 @@
 
+
 .login-container,
 .register-container {
     display: flex;
@@ -8,10 +9,10 @@
     padding: 50px;
     width: 20%;  
     margin: 0 auto; 
-    background-color: rgb(255, 255, 255);
-    border: 1px solid;
+    background-color: rgb(228, 228, 228);
     border-radius: 10px;
     box-shadow: 10px 10px 20px #0000004c;
+    border-color: #342641;
 }
 
 .auth-container {
@@ -23,10 +24,9 @@
   h2 {
     margin-top: 0;
     color: #342641;
-    margin-bottom: 20px;
+    margin-bottom: 0;
     text-align: center;
     font-size: 25px;
-  
   }
 
   .login-container label,
@@ -34,6 +34,7 @@
     margin-bottom: 5px;
     display: flex;
     margin-left: 10px;
+    color: #342641;
   }
 
   .login-container input,
@@ -48,6 +49,8 @@
     border-radius: 10px;
     box-sizing: border-box;
     position: relative;
+    border-color: #342641;;
+    background-color: rgb(228, 228, 228);
   }
   
   #login-btn,
@@ -57,7 +60,7 @@
     width: 100%;
     margin-left: 10px;
     margin-bottom: 0;
-    background-color: #ff6200;
+    background-color: #006e04;
     color: #fff;
     border: none;
     border-radius: 10px; 
@@ -87,4 +90,55 @@
 
   #errorEmoji {
     margin-right: 5px;
+  }
+
+  .redirect-content {
+    display: flex;
+    flex-direction: row;
+    justify-content: center;
+  }
+
+  .redirect-content p {
+    margin-top: 0;
+    margin-bottom: 5px;
+    font-size: 12px;
+    color: #342641;
+    
+  }
+
+  #redirectBtn {
+    font-size: 12px;
+    border: none;
+    color: rgb(0, 4, 255);
+    background-color: rgb(228, 228, 228);
+    
+  }
+
+  #redirectBtn:hover {
+    opacity: 0.8;
+  }
+
+  #redirectBtn:active {
+    opacity: 0.6;
+  }
+
+  .backToMain {
+    display: flex;
+    flex-direction: row-reverse;
+    justify-content: center;
+  }
+
+  #backToMainBtn {
+    border: none;
+    background-color: rgb(228, 228, 228);
+    margin-top: 0;
+    margin-bottom: 5px;
+  }
+
+  #backToMainBtn:hover {
+    opacity: 0.8;
+  }
+  #backToMainBtn:active {
+    opacity: 0.6;
+
   }

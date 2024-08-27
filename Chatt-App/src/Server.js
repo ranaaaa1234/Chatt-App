@@ -86,9 +86,9 @@ const userSchema = new mongoose.Schema({
       }
   
       // Generera en JWT-token för den inloggade användaren
-      const token = jwt.sign({ userId: user._id, username: user.username }, 'your-secret-key', { expiresIn: '1h' });
+      const token = jwt.sign({ userId: user._id, username: user.username, email: user.email }, 'your-secret-key', { expiresIn: '1h' });
   
-      res.json({ token, id: user._id, username: user.username, avatar: user.avatar });
+      res.json({ token, id: user._id, username: user.username, avatar: user.avatar, email: user.email });
     } catch (error) {
       console.error('Error during login:', error);
       res.status(500).json({ message: 'Login failed' });
