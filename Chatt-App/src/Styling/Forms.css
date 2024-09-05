@@ -9,10 +9,10 @@
     padding: 50px;
     width: 20%;  
     margin: 0 auto; 
-    background-color: rgb(228, 228, 228);
+    background-color: rgb(255, 255, 255);
     border-radius: 10px;
     box-shadow: 10px 10px 20px #0000004c;
-    border-color: #342641;
+    border-color: black;
 }
 
 .auth-container {
@@ -23,7 +23,7 @@
   
   h2 {
     margin-top: 0;
-    color: #342641;
+    color: black;
     margin-bottom: 0;
     text-align: center;
     font-size: 25px;
@@ -34,7 +34,7 @@
     margin-bottom: 5px;
     display: flex;
     margin-left: 10px;
-    color: #342641;
+    color: black;
   }
 
   .login-container input,
@@ -49,8 +49,7 @@
     border-radius: 10px;
     box-sizing: border-box;
     position: relative;
-    border-color: #342641;;
-    background-color: rgb(228, 228, 228);
+    border-color: black;
   }
   
   #login-btn,
@@ -60,7 +59,7 @@
     width: 100%;
     margin-left: 10px;
     margin-bottom: 0;
-    background-color: #006e04;
+    background-color: #135316;
     color: #fff;
     border: none;
     border-radius: 10px; 
@@ -102,7 +101,7 @@
     margin-top: 0;
     margin-bottom: 5px;
     font-size: 12px;
-    color: #342641;
+    color: black;
     
   }
 
@@ -110,27 +109,28 @@
     font-size: 12px;
     border: none;
     color: rgb(0, 4, 255);
-    background-color: rgb(228, 228, 228);
-    
   }
 
   #redirectBtn:hover {
     opacity: 0.8;
+    color: red;
   }
 
   #redirectBtn:active {
     opacity: 0.6;
+    color: red;
   }
 
   .backToMain {
     display: flex;
     flex-direction: row-reverse;
     justify-content: center;
+    margin-top: 20px;
   }
 
   #backToMainBtn {
     border: none;
-    background-color: rgb(228, 228, 228);
+    background-color: #006e0400;
     margin-top: 0;
     margin-bottom: 5px;
   }
@@ -141,4 +141,11 @@
   #backToMainBtn:active {
     opacity: 0.6;
 
+  }
+
+  .success-message {
+    font-size: 13px;
+    margin-bottom: 10px;
+    color: red;
+    font-weight: bold;
   }

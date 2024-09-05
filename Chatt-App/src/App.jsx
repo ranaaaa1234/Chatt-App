@@ -8,7 +8,7 @@ import Header from './components/Header';
 import SideNav from './components/SideNav';
 import MainPage from './components/MainPage';
 import './index.css';
-import { useAuth } from './components/AuthContext'; // Import useAuth
+import { useAuth } from './components/AuthContext';
 
 const App = () => {
   const { isAuthenticated } = useAuth(); // Access the authentication status

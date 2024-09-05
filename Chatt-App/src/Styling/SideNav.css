@@ -1,16 +1,17 @@
-/* SideNav.css */
+
 .side-nav {
     height: 100%;
     width: 250px;
     position: fixed;
+    z-index: 1;
     top: 0;
     left: -250px;
-    background-color: #342641;
+    background-color:#333;
     overflow-x: hidden;
     transition: 0.5s;
     padding-top: 60px;
   }
-  
+
 .side-nav.open {
     left: 0;
     
@@ -36,29 +37,31 @@
     border: none;
     cursor: pointer;
     width: 100%;
-    transition: 0.3s;
+    margin-top: 230px;
   }
   
 .profile-btn {
-    background-color: #342641;
-    color: white;
-    margin-left: 20px;
-    padding: 10px 20px;
+    background-color: #33333300;
+    margin-top: 10px;
+    margin-left: 15px;
+    padding: 5px;
     border: none;
-    border-radius: 10px;
     cursor: pointer;
-    font-family: 'Lucida Sans', 'Lucida Sans Regular', 'Lucida Grande', 'Lucida Sans Unicode', Geneva, Verdana, sans-serif;
-    font-size: 16px;
   }
   
 .profile-btn:hover,
-.logout-btn:hover,¨
-.close-btn:hover {
+.logout-btn:hover {
     opacity: 0.9;
   }
 
   .profile-btn:active,
-  .logout-btn:active,
+  .logout-btn:active {
+    opacity: 0.7;
+  }
+
+  .close-btn:hover {
+    opacity: 0.9;
+  }
   .close-btn:active {
     opacity: 0.7;
   }
@@ -90,4 +93,4 @@
     color: white;
   }
   
-  
+ 

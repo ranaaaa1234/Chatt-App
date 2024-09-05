@@ -1,50 +1,32 @@
 
 .main-container {
-    text-align: center;
-    margin-top: 50px;
-    padding: 50px;
-    border-radius: 10px;
-    margin-left: 400px;
-    margin-right: 400px;
-    box-shadow: 10px 10px 20px #0000004c;
-  }
-  
-  .selection-container {
-    margin-bottom: 20px;
-    margin-top: 20px;
+  align-items: center;
+  display: flex;
+  flex-direction: column;
+  margin-top: 100px;
   }
   
   #mainBtn {
     margin: 10px;
-    padding: 10px;
+    padding: 20px;
     margin-top: 0;
-    width: 100%;
+    width: 20%;
     font-size: 16px;
     cursor: pointer;
-    background-color: #006e04;
+    background-color: #135316;
     color: white;
     border: none;
     border-radius: 10px;
-    display: flex;
-    flex-direction: column;
+    box-shadow: 10px 10px 20px #0000004c;
     text-align: center;
     align-items: center;
     justify-content: center;
     font-family: 'Lucida Sans', 'Lucida Sans Regular', 'Lucida Grande', 'Lucida Sans Unicode', Geneva, Verdana, sans-serif;
   }
 
-  h3 {
-    font-size: 20px;
-    color: black;
+  #mainBtn:hover {
+    opacity: 0.9;
   }
-
-  .logoS {
-    display: flex;
-    justify-content: center;
+  #mainBtn:active {
+    opacity: 0.7;
   }
-
-  #smallLogo {
-    padding: 10px;
-    padding-left: 5px;
-  }
-  

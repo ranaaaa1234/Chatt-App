@@ -2,15 +2,18 @@
 html, 
 body {
   font-family: 'Lucida Sans', 'Lucida Sans Regular', 'Lucida Grande', 'Lucida Sans Unicode', Geneva, Verdana, sans-serif;
-  background-color: #ffffff;
-  height: 100%;
-  margin: 0 auto;
+  margin-top: 0;
+  margin-left: 0;
+
 }
 
 .header-container {
-  padding: 20px;
+  margin-top: 20px;
+  margin-bottom: 0;
   font-size: 20px;
-  color: #342641;
+  position: relative;
+  color: black;
+  border-bottom: 1px solid;
 }
 
 #chatEmoji {
@@ -19,6 +22,7 @@ body {
 
 .logo {
   display: flex;
+  justify-content: center;
 }
 
 .error {
@@ -30,25 +34,6 @@ body {
   overflow-y: scroll;
 }
 
-.my-message {
-  text-align: right;
-  background: #e0e0e0;
-  padding: 10px;
-  margin-bottom: 10px;
-}
-
-.other-message {
-  text-align: left;
-  background: #f0f0f0;
-  padding: 10px;
-  margin-bottom: 10px;
-}
-
-.avatar {
-  width: 50px;
-  height: 50px;
-  border-radius: 50%;
-}
 
 @media (prefers-color-scheme: light) {
   :root {

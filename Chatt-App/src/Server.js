@@ -112,3 +112,4 @@ app.use(csrfProtection);
 app.patch('/csrf', (req, res) => {
   res.json({ csrfToken: req.csrfToken() });
 });
+

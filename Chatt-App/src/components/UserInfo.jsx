@@ -9,6 +9,7 @@ const UserInfo = () => {
     <div className="user-info">
       <img src={user.avatar} alt={`${user.username}'s avatar`} className="avatar" />
       <span>{user.username}</span>
+      <span>{user.email}</span>
     </div>
   );
 };

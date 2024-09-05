@@ -1,20 +1,24 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import axios from 'axios';
-import { useNavigate } from 'react-router-dom';
-import { useAuth } from './AuthContext'; // Import the Auth context
+import { useLocation, useNavigate } from 'react-router-dom';
+import { useAuth } from './AuthContext';
 import '../Styling/Forms.css'
+import getCsrfToken from '../getCsrfToken'
 
 
 const LogIn = () => {
-  // State hooks for form inputs and error message
+
   const [username, setUsername] = useState(''); // Username input
   const [password, setPassword] = useState(''); // Password input
   const [error, setError] = useState(''); // Error message display
   const navigate = useNavigate(); // Hook to navigate to other routes
   const { logIn } = useAuth(); // Get the logIn function from context
+  const location = useLocation();
+  const [successMessage, setSuccessMessage] = useState('');
+
 
   // Function to fetch CSRF token from the server
-  const getCSRFToken = async () => {
+  const getCsrfToken = async () => {
     try {
       // Make a PATCH request to get the CSRF token
       const response = await axios.patch('https://chatify-api.up.railway.app/csrf', {});
@@ -25,20 +29,27 @@ const LogIn = () => {
     }
   };
 
+  useEffect(() => {
+    if (location.state && location.state.successMessage) {
+      setSuccessMessage(location.state.successMessage);
+    }
+  }, [location]);
+
+
   // Function to handle form submission
   const handleLogIn = async (e) => {
     e.preventDefault(); // Prevent the default form submission behavior
 
     try {
-      const csrfToken = await getCSRFToken(); // Fetch CSRF token
-      console.log('CSRF Token:', csrfToken); // Log the CSRF token for debugging
+      const csrfToken = await getCsrfToken(); // Fetch CSRF token
+      console.log('Csrf Token:', csrfToken); // Log the CSRF token for debugging
 
       // Make a POST request to generate the authentication token
       const response = await axios.post('https://chatify-api.up.railway.app/auth/token', {
         username,
         password,
       }, {
-        headers: { 'X-CSRF-Token': csrfToken }, // Set CSRF token in headers
+        headers: { 'X-Csrf-Token': csrfToken }, // Set CSRF token in headers
       });
 
       // Extract token and user details from response
@@ -62,15 +73,12 @@ const LogIn = () => {
   }
   };
 
-  
-
     // Function to handle the click event
     const handleBackClick = () => {
-      navigate('/'); // Navigate to the main page when the button is clicked
+      navigate('/');
     }
-     // Function to handle the click event
      const handleMainpageClick = () => {
-      navigate('/register'); // Navigate to the main page when the button is clicked
+      navigate('/register'); 
     }
 
   return (
@@ -79,13 +87,19 @@ const LogIn = () => {
 
     <div className='backToMain'> 
     <h2>User log in</h2><button id='backToMainBtn' onClick={handleBackClick} style={{ cursor: 'pointer' }}>
-    <svg xmlns="http://www.w3.org/2000/svg" width="25" height="30" fill="#342641" className="bi bi-box-arrow-left" viewBox="0 0 16 16">
+    <svg xmlns="http://www.w3.org/2000/svg" width="25" height="30" fill="black" className="bi bi-box-arrow-left" viewBox="0 0 16 16">
     <path fill-rule="evenodd" d="M6 12.5a.5.5 0 0 0 .5.5h8a.5.5 0 0 0 .5-.5v-9a.5.5 0 0 0-.5-.5h-8a.5.5 0 0 0-.5.5v2a.5.5 0 0 1-1 0v-2A1.5 1.5 0 0 1 6.5 2h8A1.5 1.5 0 0 1 16 3.5v9a1.5 1.5 0 0 1-1.5 1.5h-8A1.5 1.5 0 0 1 5 12.5v-2a.5.5 0 0 1 1 0z"/>
     <path fill-rule="evenodd" d="M.146 8.354a.5.5 0 0 1 0-.708l3-3a.5.5 0 1 1 .708.708L1.707 7.5H10.5a.5.5 0 0 1 0 1H1.707l2.147 2.146a.5.5 0 0 1-.708.708z"/>
   </svg>
 </button>
           </div>
 <div className="login-container">
+
+{successMessage && (
+        <div className="success-message">
+          {successMessage}
+        </div>
+      )}
 
       <form onSubmit={handleLogIn}>
       <div id='form-field'>
