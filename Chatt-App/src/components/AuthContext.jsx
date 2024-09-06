@@ -1,25 +1,28 @@
-import React, { createContext, useContext, useState, useEffect } from 'react';
+import React, { createContext, useState, useEffect } from 'react';
 
 const AuthContext = createContext();
-
-export const useAuth = () => useContext(AuthContext);
 
 export const AuthProvider = ({ children }) => {
   const [isAuthenticated, setIsAuthenticated] = useState(false);
 
   useEffect(() => {
-    const token = localStorage.getItem('token');
-    setIsAuthenticated(!!token);
+    // Kontrollera om JWT-token finns i localStorage och om den är giltig
+    const token = localStorage.getItem('jwtToken');
+    if (token) {
+      setIsAuthenticated(true); // Användaren anses inloggad om token finns
+    }
   }, []);
 
-  const logIn = (token) => {
-    localStorage.setItem('token', token);
+  const logIn = (token, user) => {
     setIsAuthenticated(true);
+    localStorage.setItem('jwtToken', token); // Spara JWT-token
+    localStorage.setItem('user', JSON.stringify(user)); // Spara användarinfo
   };
 
   const logOut = () => {
-    localStorage.removeItem('token');
     setIsAuthenticated(false);
+    localStorage.removeItem('jwtToken'); // Ta bort JWT-token
+    localStorage.removeItem('user'); // Ta bort användarinfo
   };
 
   return (
@@ -28,3 +31,5 @@ export const AuthProvider = ({ children }) => {
     </AuthContext.Provider>
   );
 };
+
+export const useAuth = () => React.useContext(AuthContext);

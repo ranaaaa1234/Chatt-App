@@ -7,8 +7,7 @@
   overflow: hidden;
   justify-content: center;
   align-items: center;
-  transition: margin-left 0.5s; 
-  margin-left: 0;
+  color: black;
 }
 
 .chat-app {
@@ -24,6 +23,7 @@
   background-color: #fff;
   width: 60%;
   height: 10%;
+  color: black;
 }
 
 /* Message bubble styling */
@@ -58,11 +58,13 @@
 .my-message {
   text-align: right;
   background: #e0e0e0;
+  color: black;
 }
 
 .other-message {
   text-align: left;
   background: #f0f0f0;
+  color: black;
 }
 
 /* Form to send new messages */
@@ -99,8 +101,22 @@
   opacity: 0.7;
 }
 
-#deleteBtn {
+/* Styling för raderaknappen */
+.delete-button {
+  background: #ff4d4d;
+  color: white;
   border: none;
-  background-color: #e0e0e0;
+  padding: 5px 10px;
+  border-radius: 5px;
   cursor: pointer;
+  margin-top: 5px;
+  font-size: 12px;
+}
+
+.delete-button:hover {
+  background: #e60000;
+}
+
+.delete-button:active {
+  background: #cc0000;
 }

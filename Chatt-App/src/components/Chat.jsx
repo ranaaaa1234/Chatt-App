@@ -1,116 +1,151 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
+import axios from 'axios';
 import '../Styling/Chat.css';
 import DOMPurify from 'dompurify';
 
-// Fake chat messages
-const fakeChat = [
-  {
-    text: "Tja tja, hur mår du?",
-    avatar: "https://i.pravatar.cc/100?img=14",
-    username: "Johnny",
-    conversationId: null
-  },
-  {
-    text: "Hallå!! Svara då!!",
-    avatar: "https://i.pravatar.cc/100?img=14",
-    username: "Johnny",
-    conversationId: null
-  },
-  {
-    text: "Sover du eller?! 😴",
-    avatar: "https://i.pravatar.cc/100?img=14",
-    username: "Johnny",
-    conversationId: null
-  }
-];
-
-
 const Chat = () => {
-  const [messages, setMessages] = useState([]); // State to store chat messages
-  const [newMessage, setNewMessage] = useState(''); // State to store the new message input
-  const [fakeResponseIndex, setFakeResponseIndex] = useState(0); // State to track the current index of the fake chat response
+  const [messages, setMessages] = useState([]); // Array för att lagra meddelanden
+  const [newMessage, setNewMessage] = useState(''); // För att skriva nya meddelanden
+  
+  const [fakeChat] = useState([
+    {
+      text: "Tja",
+      avatar: "https://i.pravatar.cc/100?img=14",
+      username: "Johnny",
+      id: 1
+    },
+    {
+      text: "Hallå!! Svara då!!",
+      avatar: "https://i.pravatar.cc/100?img=14",
+      username: "Johnny",
+      id: 2
+    },
+    {
+      text: "Sover du eller?! 😴",
+      avatar: "https://i.pravatar.cc/100?img=14",
+      username: "Johnny",
+      id: 3
+    }
+  ]);
 
   const loggedInUser = JSON.parse(localStorage.getItem('user')); // Retrieve logged-in user's data
   if (!loggedInUser) {
-    console.error('User not logged in');
     return null; // or redirect to login
   }
-  
-  // Function to send a new message
-  const handleSendMessage = async (e) => {
-    e.preventDefault(); // Prevent the default form submission behavior
-    const sanitizedMessage = DOMPurify.sanitize(newMessage);
 
+  // Hämta JWT-token från localStorage
+  const token = localStorage.getItem('jwtToken');
 
-    const newMessageObj = {
-      text: sanitizedMessage, // Set the new message text
-      avatar: loggedInUser.avatar || "https://i.pravatar.cc/100?img=1", // Set the user's avatar or a default one
-      username: loggedInUser.username, // Set the logged-in user's username
-      conversationId: null // Set to null as it's a fake chat
+  useEffect(() => {
+    // Funktion för att hämta alla meddelanden
+    const fetchMessages = async () => {
+      const url = `https://chatify-api.up.railway.app/messages`;
+
+      try {
+        const response = await axios.get(url, {
+          headers: {
+            Authorization: `Bearer ${token}`, // Använd JWT-token för att autentisera
+          },
+        });
+
+        // Lägg till både dina och fejkmeddelandena i meddelandelistan
+        setMessages([...fakeChat, ...response.data,]);
+      } catch (error) {
+        console.error('Failed to fetch messages:', error);
+      }
     };
 
+    fetchMessages(); // Kör funktionen vid komponentens första render
+  }, [token, fakeChat]);
 
-    // Add the user's message to the messages state
-    setMessages((prevMessages) => [...prevMessages, newMessageObj]);
-    setNewMessage(''); // Clear the input field after sending the message
+  // Funktion för att skicka ett nytt meddelande
+  const sendMessage = async (e) => {
+    e.preventDefault();
+    const sanitizedMessage = DOMPurify.sanitize(newMessage);
 
+        //const conversationId = '550e8400-e29b-41d4-a716-446655440000'; // Definiera conversationId
+        const url = `https://chatify-api.up.railway.app/messages`;
+        //console.log('Sending message with conversationId:', conversationId);
 
-    // Simulate a response from the fake chat after a short delay
-    setTimeout(() => {
-      if (fakeResponseIndex < fakeChat.length) {
-        const fakeResponse = fakeChat[fakeResponseIndex]; // Get the next fake chat message in order
-        setMessages((prevMessages) => [...prevMessages, fakeResponse]); // Add fake response to messages
-        setFakeResponseIndex(fakeResponseIndex + 1); // Move to the next fake chat message
-      }
-    }, 1000); // 1-second delay for the fake response
+   
+
+    try {
+      const response = await axios.post(
+        url,
+        {
+          text: sanitizedMessage,
+          avatar: 'https://i.pravatar.cc/100', // Användarens avatar (exempel)
+          username: loggedInUser.username, // Användarnamn (exempel)
+        },
+        {
+          headers: {
+            Authorization: `Bearer ${token}`,
+            'Content-Type': 'application/json',
+          },
+        }
+      );
+
+      // Lägg till det nya meddelandet i listan
+      setMessages((newMessages) => [...newMessages, response.data]);
+      setNewMessage(''); // Rensa input-fältet efter att meddelandet skickats
+    } catch (error) {
+      console.error('Failed to send message:', error.response ? error.response.data : error.message);
+    }
   };
 
+  // Funktion för att radera ett meddelande
+  const deleteMessage = async (msgId) => {
+    const url = `https://chatify-api.up.railway.app/messages/${msgId}`;
 
-  // Function to delete a message
-  const handleDeleteMessage = (id) => {
-    if (messages[id].username === loggedInUser.username) {
-    setMessages(messages.filter((_, index) => index !== id)); // Filter out the deleted message
+    try {
+      await axios.delete(url, {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      });
+
+      // Filtrera bort det raderade meddelandet från listan
+      setMessages((prevMessages) => prevMessages.filter((msg) => msg.id !== msgId));
+    } catch (error) {
+      console.error('Failed to delete message:', error.response ? error.response.data : error.message);
     }
   };
 
   return (
-  
-  <div className='chat-app'>
-
     <div className="chat-container">
-     
-      <div className="messages">
-        {messages.map((msg, index) => (
-          <div key={index} className={msg.username === loggedInUser.username ? 'my-message' : 'other-message'}>
-            <div className="message-header">
-              <img src={msg.avatar} alt={`${msg.username}'s avatar`} className="avatar" />
-              <p className="username">{msg.username}</p>
+      <div className="chat-app">
+        <div className="messages">
+          {/* Visa alla meddelanden */}
+          {messages.map((msg) => (
+            <div key={msg.id} className={`message ${msg.username === loggedInUser.username ? 'my-message' : 'other-message'}`}>
+              <div className="message-header">
+                <img src={msg.avatar} alt={msg.username} className="avatar" />
+                <span className="username"><p>{msg.username}</p></span>
+              </div>
+              <div><p>{msg.text}</p></div>
+              
+              {msg.username === loggedInUser.username && (
+                <button className="delete-button" onClick={() => deleteMessage(msg.id)}>
+                  Radera
+                </button>
+              )}
             </div>
-            <p>{msg.text}</p>
+          ))}
+        </div>
 
-
-            {msg.username === loggedInUser.username && (
-
-
-            <button id='deleteBtn' onClick={() => handleDeleteMessage(index)}><svg xmlns="http://www.w3.org/2000/svg" width="13" height="13" fill="red" className="bi bi-trash3" viewBox="0 0 16 16">
-                <path d="M6.5 1h3a.5.5 0 0 1 .5.5v1H6v-1a.5.5 0 0 1 .5-.5M11 2.5v-1A1.5 1.5 0 0 0 9.5 0h-3A1.5 1.5 0 0 0 5 1.5v1H1.5a.5.5 0 0 0 0 1h.538l.853 10.66A2 2 0 0 0 4.885 16h6.23a2 2 0 0 0 1.994-1.84l.853-10.66h.538a.5.5 0 0 0 0-1zm1.958 1-.846 10.58a1 1 0 0 1-.997.92h-6.23a1 1 0 0 1-.997-.92L3.042 3.5zm-7.487 1a.5.5 0 0 1 .528.47l.5 8.5a.5.5 0 0 1-.998.06L5 5.03a.5.5 0 0 1 .47-.53Zm5.058 0a.5.5 0 0 1 .47.53l-.5 8.5a.5.5 0 1 1-.998-.06l.5-8.5a.5.5 0 0 1 .528-.47M8 4.5a.5.5 0 0 1 .5.5v8.5a.5.5 0 0 1-1 0V5a.5.5 0 0 1 .5-.5"/>
-              </svg></button>
-             )}
-          </div>
-        ))}
+        {/* Formulär för att skriva nya meddelanden */}
+        <div className="message-form">
+          <input
+            type="text"
+            value={newMessage}
+            onChange={(e) => setNewMessage(e.target.value)}
+            placeholder="Skriv ett meddelande..."
+          />
+          <button onClick={sendMessage}>Skicka</button>
+        </div>
       </div>
-     
-      <form onSubmit={handleSendMessage} className="message-form">
-        <input type="text" value={newMessage} onChange={(e) => setNewMessage(e.target.value)} required /> {/* Input field for the new message */}
-        <button type="submit">Send</button>
-      </form>
-    </div>
     </div>
   );
 };
 
-
 export default Chat;
-
-
-
