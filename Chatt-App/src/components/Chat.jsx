@@ -1,151 +1,130 @@
-import React, { useEffect, useState } from 'react';
-import axios from 'axios';
-import '../Styling/Chat.css';
-import DOMPurify from 'dompurify';
+import React, { useEffect, useState, useRef } from 'react'; // Import React and hooks
+import axios from 'axios'; // Import axios for HTTP requests
+import '../Styling/Chat.css'; // Import CSS for styling
+import DOMPurify from 'dompurify'; // Import DOMPurify for sanitizing user input
+import { useAuth } from './AuthContext'; // Import AuthContext for user information
 
 const Chat = () => {
-  const [messages, setMessages] = useState([]); // Array för att lagra meddelanden
-  const [newMessage, setNewMessage] = useState(''); // För att skriva nya meddelanden
-  
+  const { user } = useAuth(); // Get user information from AuthContext
+  const [messages, setMessages] = useState([]); // State for storing messages
+  const [newMessage, setNewMessage] = useState(''); // State for new message
+  const inputRef = useRef(null); // Ref for input field
+
+  // Fake chat messages for demonstration
   const [fakeChat] = useState([
     {
       text: "Tja",
       avatar: "https://i.pravatar.cc/100?img=14",
       username: "Johnny",
-      id: 1
+      conversationId: null
     },
     {
       text: "Hallå!! Svara då!!",
       avatar: "https://i.pravatar.cc/100?img=14",
       username: "Johnny",
-      id: 2
+      conversationId: null
     },
     {
       text: "Sover du eller?! 😴",
       avatar: "https://i.pravatar.cc/100?img=14",
       username: "Johnny",
-      id: 3
+      conversationId: null
     }
   ]);
 
-  const loggedInUser = JSON.parse(localStorage.getItem('user')); // Retrieve logged-in user's data
-  if (!loggedInUser) {
-    return null; // or redirect to login
-  }
-
-  // Hämta JWT-token från localStorage
-  const token = localStorage.getItem('jwtToken');
+  const token = localStorage.getItem('jwtToken'); // Get JWT token from localStorage
 
   useEffect(() => {
-    // Funktion för att hämta alla meddelanden
+    // Fetch messages from server
     const fetchMessages = async () => {
-      const url = `https://chatify-api.up.railway.app/messages`;
+      const url = `https://chatify-api.up.railway.app/messages`; // Server URL
 
       try {
-        const response = await axios.get(url, {
+        const response = await axios.get(url, { // GET request to server
           headers: {
-            Authorization: `Bearer ${token}`, // Använd JWT-token för att autentisera
+            Authorization: `Bearer ${token}`, // Send JWT token in header
           },
         });
 
-        // Lägg till både dina och fejkmeddelandena i meddelandelistan
-        setMessages([...fakeChat, ...response.data,]);
+        // Update messages state with fetched messages and fake chat messages
+        setMessages([...fakeChat, ...response.data]);
       } catch (error) {
-        console.error('Failed to fetch messages:', error);
+        console.error('Failed to fetch messages:', error); // Log error if request fails
       }
     };
 
-    fetchMessages(); // Kör funktionen vid komponentens första render
-  }, [token, fakeChat]);
+    fetchMessages(); // Call fetchMessages on component mount
+  }, [token, fakeChat]); // Run effect when token or fakeChat changes
 
-  // Funktion för att skicka ett nytt meddelande
-  const sendMessage = async (e) => {
-    e.preventDefault();
-    const sanitizedMessage = DOMPurify.sanitize(newMessage);
+  // send a new message
+  const sendMessage = async () => {
+    if (newMessage.trim().length === 0) return; // Check if message is not empty
 
-        //const conversationId = '550e8400-e29b-41d4-a716-446655440000'; // Definiera conversationId
-        const url = `https://chatify-api.up.railway.app/messages`;
-        //console.log('Sending message with conversationId:', conversationId);
+    const sanitizedMessage = DOMPurify.sanitize(newMessage); // Sanitize message
 
-   
+    const conversationId = '12345'; // Define conversationId
+
+    const url = `https://chatify-api.up.railway.app/messages?conversationId=${conversationId}`; // Server URL
 
     try {
       const response = await axios.post(
         url,
         {
-          text: sanitizedMessage,
-          avatar: 'https://i.pravatar.cc/100', // Användarens avatar (exempel)
-          username: loggedInUser.username, // Användarnamn (exempel)
+          headers: {
+            Authorization: `Bearer ${token}`, // Send JWT token in header
+            'Content-Type': 'application/json', // Specify content type
+          },
         },
         {
-          headers: {
-            Authorization: `Bearer ${token}`,
-            'Content-Type': 'application/json',
-          },
-        }
+          text: sanitizedMessage, // Message text
+          avatar: user.avatar || 'https://i.pravatar.cc', // User avatar from AuthContext
+          username: user.username, // User name from AuthContext
+          conversationId : conversationId
+        },
+       
       );
 
-      // Lägg till det nya meddelandet i listan
-      setMessages((newMessages) => [...newMessages, response.data]);
-      setNewMessage(''); // Rensa input-fältet efter att meddelandet skickats
+      // Add new message to messages list
+      setMessages((prevMessages) => [...prevMessages, response.data]);
+      setNewMessage(''); // Clear input field after sending
     } catch (error) {
-      console.error('Failed to send message:', error.response ? error.response.data : error.message);
-    }
-  };
-
-  // Funktion för att radera ett meddelande
-  const deleteMessage = async (msgId) => {
-    const url = `https://chatify-api.up.railway.app/messages/${msgId}`;
-
-    try {
-      await axios.delete(url, {
-        headers: {
-          Authorization: `Bearer ${token}`,
-        },
-      });
-
-      // Filtrera bort det raderade meddelandet från listan
-      setMessages((prevMessages) => prevMessages.filter((msg) => msg.id !== msgId));
-    } catch (error) {
-      console.error('Failed to delete message:', error.response ? error.response.data : error.message);
+      console.error('Failed to send message:', error.response ? error.response.data : error.message); // Log error if request fails
     }
   };
 
   return (
-    <div className="chat-container">
-      <div className="chat-app">
-        <div className="messages">
-          {/* Visa alla meddelanden */}
-          {messages.map((msg) => (
-            <div key={msg.id} className={`message ${msg.username === loggedInUser.username ? 'my-message' : 'other-message'}`}>
-              <div className="message-header">
-                <img src={msg.avatar} alt={msg.username} className="avatar" />
-                <span className="username"><p>{msg.username}</p></span>
+    <div className="chat-container"> {/* Main container for chat */}
+        
+        <div className="messages"> {/* Container for displaying messages */}
+          {messages.map((msg, index) => (
+            <div key={index} className={`message ${msg.username === user.username ? 'my-message' : 'other-message'}`}>
+
+              <div className="message-header"> {/* Header for each message */}
+                <img className="avatar" src={msg.avatar} alt={msg.username} /> {/* Display avatar */}
+
+                <p className='username'>{msg.username}</p> {/* Display username */}
               </div>
-              <div><p>{msg.text}</p></div>
-              
-              {msg.username === loggedInUser.username && (
-                <button className="delete-button" onClick={() => deleteMessage(msg.id)}>
-                  Radera
-                </button>
-              )}
+
+              <div className='msgText'><p>{msg.text}</p></div> {/* Display message text */}
             </div>
+
+
+
           ))}
         </div>
 
-        {/* Formulär för att skriva nya meddelanden */}
-        <div className="message-form">
+        <div className="message-form"> {/* Form for composing new messages */}
           <input
             type="text"
             value={newMessage}
-            onChange={(e) => setNewMessage(e.target.value)}
+            onChange={(e) => setNewMessage(e.target.value)} // Update state on input change
             placeholder="Skriv ett meddelande..."
+            ref={inputRef}
           />
-          <button onClick={sendMessage}>Skicka</button>
+          <button onClick={sendMessage}>Skicka</button> {/* Button to send message */}
         </div>
       </div>
-    </div>
   );
 };
 
-export default Chat;
+export default Chat; // Export Chat component for use in other parts of the app
