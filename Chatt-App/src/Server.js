@@ -6,9 +6,6 @@ const bcrypt = require('bcrypt');
 const jwt = require('jsonwebtoken');
 const cors = require('cors');
 
-
-const token = jwt.sign({ userId: user._id, username: user.username }, process.env.JWT_SECRET_KEY, { expiresIn: '1h' });
-
 const app = express();
 
 // Middleware
@@ -41,6 +38,7 @@ const userSchema = new mongoose.Schema({
   username: { type: String, required: true, unique: true },
   password: { type: String, required: true },
   email: { type: String, required: true, unique: true },
+  avatar: { type: String, }  // <-- Added avatar field to store avatar URLs
 });
 
 const User = mongoose.model('User', userSchema);
@@ -48,7 +46,7 @@ const User = mongoose.model('User', userSchema);
 // Register Route
 app.post('/register', async (req, res) => {
   try {
-    const { username, password, email } = req.body;
+    const { username, password, email, avatar } = req.body; // <-- Capture avatar on registration
 
     const existingUser = await User.findOne({ $or: [{ username }, { email }] });
     if (existingUser) {
@@ -61,6 +59,7 @@ app.post('/register', async (req, res) => {
       username,
       password: hashedPassword,
       email,
+      avatar: avatar || 'https://i.pravatar.cc' // <-- Default avatar if not provided
     });
     await newUser.save();
 
@@ -86,9 +85,24 @@ app.post('/login', async (req, res) => {
       return res.status(401).json({ message: 'Invalid credentials' });
     }
 
-    const token = jwt.sign({ userId: user._id, username: user.username }, 'your-secret-key', { expiresIn: '1h' });
+    // Include avatar in JWT token
+    const token = jwt.sign(
+      { id: user._id, 
+        username: user.username,  
+        email: user.email,
+        avatar: user.avatar 
+      },
+      'your-secret-key',
+      { expiresIn: '1h' }
+    );
 
-    res.json({ token, id: user._id, username: user.username, email: user.email });
+    res.json({ 
+      token, 
+      id: user._id, 
+      username: user.username, 
+      email: user.email,
+      avatar: user.avatar 
+    });
   } catch (error) {
     console.error('Error during login:', error);
     res.status(500).json({ message: 'Login failed' });
@@ -103,6 +117,8 @@ const verifyToken = (req, res, next) => {
   jwt.verify(token, 'your-secret-key', (err, decoded) => {
     if (err) return res.status(500).send('Failed to authenticate token.');
     req.userId = decoded.userId;
+    req.username = decoded.username;
+    req.avatar = decoded.avatar;
     next();
   });
 };
@@ -113,25 +129,55 @@ const messageSchema = new mongoose.Schema({
   avatar: { type: String, required: true },
   username: { type: String, required: true },
   userId: { type: mongoose.Schema.Types.ObjectId, ref: 'User', required: true },
-  conversationId: { type: mongoose.Schema.Types.ObjectId, ref: 'Conversation', required: true },
+  conversationID: { type: String, required: true },
   createdAt: { type: Date, default: Date.now }
 });
 
 const Message = mongoose.model('Message', messageSchema);
 
-// Conversation Schema
+//Conversation Schema
 const conversationSchema = new mongoose.Schema({
-  userId: { type: mongoose.Schema.Types.ObjectId, ref: 'User', required: true },
-  conversationID: { type: String, required: true }
+userId: { type: mongoose.Schema.Types.ObjectId, ref: 'User', required: true },
+conversationID: { type: String, required: true }
 });
 
 const Conversation = mongoose.model('Conversation', conversationSchema);
 
+// Create Conversation Route
+app.post('/conversations', verifyToken, async (req, res) => {
+  const { userIds } = req.body;
+
+  if (!userIds || userIds.length === 0) {
+    return res.status(400).json({ message: 'User IDs are required' });
+  }
+
+ try {
+    const conversationID = new mongoose.Types.ObjectId().toString(); // Generate a new unique ID
+    const newConversation = new Conversation({ userIds, conversationID });
+    const savedConversation = await newConversation.save();
+    res.status(201).json(savedConversation);
+  } catch (error) {
+    console.error('Error creating conversation:', error);
+    res.status(500).json({ message: 'Failed to create conversation' });
+  }
+});
+
+
 // Send Message Route
 app.post('/messages', verifyToken, async (req, res) => {
-  const { text, avatar, username, conversationId, userId } = req.body;
+  const { text, conversationID } = req.body;
 
-  const newMessage = new Message({ text, avatar, username, userId, conversationId });
+  if (!conversationID) {
+    return res.status(400).json({ message: 'Conversation ID is required' });
+  }
+  
+  const newMessage = new Message({
+    text,
+    avatar: req.avatar,        // Automatically use avatar from the token
+    username: req.username,    // Automatically use username from the token
+    userId: req.userId,        // Automatically use userId from the token
+    conversationID
+  });
 
   try {
     const savedMessage = await newMessage.save();
@@ -144,9 +190,13 @@ app.post('/messages', verifyToken, async (req, res) => {
 
 // Get All Messages Route
 app.get('/messages', verifyToken, async (req, res) => {
-  const { conversationId } = req.query;
+  const { conversationID } = req.query;
+
+  if (!conversationID) {
+    return res.status(400).json({ message: 'Conversation ID is required' });
+  }
   try {
-    const messages = await Message.find({ conversationId });
+    const messages = await Message.find({ conversationID });
     res.status(200).json(messages);
   } catch (error) {
     console.error('Error fetching messages:', error);
@@ -170,4 +220,3 @@ app.delete('/messages/:id', verifyToken, async (req, res) => {
     res.status(500).send('There was a problem deleting the message.');
   }
 });
-

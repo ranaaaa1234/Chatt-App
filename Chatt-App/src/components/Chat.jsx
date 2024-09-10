@@ -5,34 +5,34 @@ import DOMPurify from 'dompurify'; // Import DOMPurify for sanitizing user input
 import { useAuth } from './AuthContext'; // Import AuthContext for user information
 
 const Chat = () => {
-  const { user } = useAuth(); // Get user information from AuthContext
+  const { user } = useAuth(); // Get user and token information from AuthContext
   const [messages, setMessages] = useState([]); // State for storing messages
   const [newMessage, setNewMessage] = useState(''); // State for new message
   const inputRef = useRef(null); // Ref for input field
 
-  // Fake chat messages for demonstration
+  // Fake chat messages for demonstration with added conversationId
   const [fakeChat] = useState([
     {
       text: "Tja",
       avatar: "https://i.pravatar.cc/100?img=14",
       username: "Johnny",
-      conversationId: null
+      conversationID: 'fake-conversation-id-1' // Static conversationId for fake chat
     },
     {
       text: "Hallå!! Svara då!!",
       avatar: "https://i.pravatar.cc/100?img=14",
       username: "Johnny",
-      conversationId: null
+      conversationID: 'fake-conversation-id-1' // Static conversationId for fake chat
     },
     {
       text: "Sover du eller?! 😴",
       avatar: "https://i.pravatar.cc/100?img=14",
       username: "Johnny",
-      conversationId: null
+      conversationID: 'fake-conversation-id-1' // Static conversationId for fake chat
     }
   ]);
 
-  const token = localStorage.getItem('jwtToken'); // Get JWT token from localStorage
+  const token = localStorage.getItem('jwtToken');
 
   useEffect(() => {
     // Fetch messages from server
@@ -40,7 +40,7 @@ const Chat = () => {
       const url = `https://chatify-api.up.railway.app/messages`; // Server URL
 
       try {
-        const response = await axios.get(url, { // GET request to server
+        const response = await axios.get(url, {
           headers: {
             Authorization: `Bearer ${token}`, // Send JWT token in header
           },
@@ -56,75 +56,78 @@ const Chat = () => {
     fetchMessages(); // Call fetchMessages on component mount
   }, [token, fakeChat]); // Run effect when token or fakeChat changes
 
-  // send a new message
-  const sendMessage = async () => {
+  // Send a new message
+  const sendMessage = async (conversationID, newMessage) => {
     if (newMessage.trim().length === 0) return; // Check if message is not empty
 
     const sanitizedMessage = DOMPurify.sanitize(newMessage); // Sanitize message
+    
 
-    const conversationId = '12345'; // Define conversationId
+    console.log('Sending message to conversation Id:', conversationID);
 
-    const url = `https://chatify-api.up.railway.app/messages?conversationId=${conversationId}`; // Server URL
+    const url = `https://chatify-api.up.railway.app/messages?conversationID=${conversationID}`; // Server URL
 
     try {
       const response = await axios.post(
         url,
         {
+          text: sanitizedMessage, // Message text
+          avatar: user.avatar, // User avatar from AuthContext
+          username: user.username, // User name from AuthContext
+          id: user.id,
+          conversationID: conversationID // conversationId (dynamic or static)
+        },
+        {
           headers: {
             Authorization: `Bearer ${token}`, // Send JWT token in header
             'Content-Type': 'application/json', // Specify content type
           },
-        },
-        {
-          text: sanitizedMessage, // Message text
-          avatar: user.avatar || 'https://i.pravatar.cc', // User avatar from AuthContext
-          username: user.username, // User name from AuthContext
-          conversationId : conversationId
-        },
-       
+        }
       );
 
-      // Add new message to messages list
-      setMessages((prevMessages) => [...prevMessages, response.data]);
-      setNewMessage(''); // Clear input field after sending
+      // Log response for sent message
+      console.log('Message sent successfully:', response);
+
+      // Optionally update local state to reflect sent message
+      setMessages(prevMessages => [...prevMessages, {
+        text: sanitizedMessage,
+        avatar: user.avatar,
+        username: user.username,
+        id: user.id, // Ensure userId is saved locally too
+        conversationID: conversationID
+      }]);
+      setNewMessage('');
     } catch (error) {
-      console.error('Failed to send message:', error.response ? error.response.data : error.message); // Log error if request fails
+      console.error('Failed to send message:', error.response ? error.response.data : error.message);
     }
   };
 
   return (
-    <div className="chat-container"> {/* Main container for chat */}
-        
-        <div className="messages"> {/* Container for displaying messages */}
-          {messages.map((msg, index) => (
-            <div key={index} className={`message ${msg.username === user.username ? 'my-message' : 'other-message'}`}>
-
-              <div className="message-header"> {/* Header for each message */}
-                <img className="avatar" src={msg.avatar} alt={msg.username} /> {/* Display avatar */}
-
-                <p className='username'>{msg.username}</p> {/* Display username */}
-              </div>
-
-              <div className='msgText'><p>{msg.text}</p></div> {/* Display message text */}
+    <div className="chat-container">
+      <div className="messages">
+        {messages.map((msg, index) => (
+          <div key={index} className={`message ${msg.id === user.id ? 'my-message' : 'other-message'}`}>
+            <div className="message-header">
+              <img className="avatar" src={msg.avatar} alt={msg.username} />
+              <p className="username">{msg.username}</p>
             </div>
-
-
-
-          ))}
-        </div>
-
-        <div className="message-form"> {/* Form for composing new messages */}
-          <input
-            type="text"
-            value={newMessage}
-            onChange={(e) => setNewMessage(e.target.value)} // Update state on input change
-            placeholder="Skriv ett meddelande..."
-            ref={inputRef}
-          />
-          <button onClick={sendMessage}>Skicka</button> {/* Button to send message */}
-        </div>
+            <div className="msgText"><p>{msg.text}</p></div>
+          </div>
+        ))}
       </div>
+
+      <div className="message-form">
+        <input
+          type="text"
+          value={newMessage}
+          onChange={(e) => setNewMessage(e.target.value)}
+          placeholder="Type here..."
+          ref={inputRef}
+        />
+        <button onClick={() => sendMessage('fake-conversation-id-1', newMessage)}>Skicka</button> {/* Use the static conversationId */}
+      </div>
+    </div>
   );
 };
 
-export default Chat; // Export Chat component for use in other parts of the app
+export default Chat;

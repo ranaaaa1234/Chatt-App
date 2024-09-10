@@ -6,52 +6,76 @@ export const AuthProvider = ({ children }) => {
   const [isAuthenticated, setIsAuthenticated] = useState(false);
   const [user, setUser] = useState(null);
 
-  // Custom function to decode JWT token
-  const decodeJwt = (token) => {
-    const payload = token.split('.')[1]; 
-    return JSON.parse(atob(payload)); // Decode Base64 payload and parse it to JSON
-  };
-
+ 
+  // Initialize authentication state on load
   useEffect(() => {
-    // Kontrollera om JWT-token finns i localStorage och om den är giltig
     const token = localStorage.getItem('jwtToken');
-    if (token) {
-      try {
-        const decodedToken = decodeJwt(token); // Decode token
-        setUser({
-          id: decodedToken.id, 
-          username: decodedToken.username,  // Get the username
-          email: decodedToken.email,        // Get email
-          avatar: decodedToken.avatar       // Get avatar URL or value
-        });
-        setIsAuthenticated(true); // Set user as authenticated if token exists
-      } catch (error) {
-        console.error("Ogiltig token:", error);
-        logOut(); // Om det är en ogiltig token loggar vi ut användaren
-      }
+   
+    if (token && isTokenValid(token)) {
+      const decodedToken = decodeJwt(token);
+      setUser({
+        id: decodedToken.id,
+        username: decodedToken.user,
+        email: decodedToken.email,
+        avatar: decodedToken.avatar
+      });
+      setIsAuthenticated(true);
+      localStorage.setItem('jwtToken', token);
+
     }
   }, []);
 
-  const logIn = (token) => {
+  // Custom function to decode JWT token
+  const decodeJwt = (token) => {
     try {
-      const decodedToken = decodeJwt(token); // Decode JWT-token when user logs in
+      const payload = token.split('.')[1]; // Extract the payload part from JWT token
+      const decodedPayload = atob(payload); // Decode Base64
+      console.log('Decoded Payload:', decodedPayload); // Log the decoded payload
+      return JSON.parse(decodedPayload);    // Parse JSON
+    } catch (error) {
+      console.error('Failed to decode JWT token:', error);
+      return null;
+    }
+  };
+  
+
+  // Function to check token validity (based on expiry)
+  const isTokenValid = (token) => {
+    const decodedToken = decodeJwt(token);
+    if (!decodedToken) return false;
+    
+    const currentTime = Math.floor(Date.now() / 1000); // Current time in seconds
+    return decodedToken.exp > currentTime; // Token is valid if expiration is in the future
+    
+  };
+
+  const logIn = (token) => {
+    const decodedToken = decodeJwt(token);  // Decode JWT token
+    if (decodedToken) {
       setUser({
-        id: decodedToken.id, 
-        username: decodedToken.username,   // Extract username
-        email: decodedToken.email,         // Extract email
-        avatar: decodedToken.avatar        // Extract avatar URL
+        id: decodedToken.id,
+        username: decodedToken.user,
+        email: decodedToken.email,
+        avatar: decodedToken.avatar
       });
       setIsAuthenticated(true);
-      localStorage.setItem('jwtToken', token); // Save JWT-token in localStorage
-    } catch (error) {
-      console.error("Kunde inte decoda token:", error);
+      localStorage.setItem('jwtToken', token); // Store JWT token in localStorage
+      localStorage.setItem('user', JSON.stringify({
+        id: decodedToken.id,
+        username: decodedToken.user,
+        email: decodedToken.email,
+        avatar: decodedToken.avatar
+      }));
+    } else {
+      console.error("Failed to decode JWT token during login.");
     }
   };
 
   const logOut = () => {
-    setIsAuthenticated(false);
-    setUser(null); // Clear user data
-    localStorage.removeItem('jwtToken'); // Remove JWT-token from localStorage
+    setIsAuthenticated(false);              // Update authentication state
+    setUser(null);                          // Clear user data
+    localStorage.removeItem('jwtToken');    // Remove JWT token from localStorage
+    localStorage.removeItem('user');        // Remove user info from localStorage
   };
 
   return (
