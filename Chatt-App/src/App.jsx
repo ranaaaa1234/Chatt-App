@@ -5,7 +5,10 @@ import Register from './components/Register';
 import Chat from './components/Chat';
 import SideNav from './components/SideNav';
 import MainPage from './components/MainPage';
+import './App.css';
 import './index.css';
+
+
 import { useAuth } from './components/AuthContext';
 
 const App = () => {

@@ -8,10 +8,10 @@
   padding: 50px;
   width: 50%;  
   margin: 0 auto; 
-  background-color: rgb(255, 255, 255);
+  background-color: #333;
   border-radius: 10px;
   box-shadow: 10px 10px 20px #0000004c;
-  border-color: black;
+  border: 1px solid #ff00fb;
   margin-top: 170px;
 }
 
@@ -23,7 +23,7 @@
   
   .header-container {
     font-size: 20px;
-    color: black;
+    color: rgb(255, 255, 255);
   }
   
   #mainBtn {
@@ -35,9 +35,9 @@
     margin-top: 0;
     font-size: 16px;
     cursor: pointer;
-    background-color: #135316;
+    background-color: #333;
     color: white;
-    border: none;
+    border: 1px solid #ff00fb;
     border-radius: 10px;
     box-shadow: 10px 10px 20px #0000004c;
     text-align: center;
@@ -48,6 +48,7 @@
 
   #mainBtn:hover {
     opacity: 0.9;
+    background-color: #ff00fb;
   }
   #mainBtn:active {
     opacity: 0.7;

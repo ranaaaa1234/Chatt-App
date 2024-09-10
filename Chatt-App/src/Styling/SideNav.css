@@ -6,7 +6,7 @@
     z-index: 1000;
     top: 0;
     left: -250px;
-    background-color:#333;
+    background-color:#ffffff;
     overflow-x: hidden;
     transition: 0.5s;
     padding-top: 60px;
@@ -14,7 +14,6 @@
 
 .side-nav.open {
     left: 0;
-    
   }
   
 .close-btn {
@@ -25,25 +24,34 @@
     margin-left: 50px;
     background: none;
     border: none;
-    color: white;
+    color: rgb(0, 0, 0);
     cursor: pointer;
   }
   
 .logout-btn {
     padding: 10px 15px;
     text-align: center;
-    background-color: #ff4d4d;
+    background-color: #333;
     color: white;
-    border: none;
+    border: 1px solid;
     cursor: pointer;
+    margin-top: 0;
     width: 100%;
-    margin-top: 230px;
+  }
+
+  .logout-btn:hover {
+    opacity: 0.9;
+    background-color: #ff00fb;
+  }
+  .logout-btn:active {
+    opacity: 0.7;
+    background-color: #ff00fb;
   }
   
 .profile-btn {
     background-color: #33333300;
     margin-top: 10px;
-    margin-left: 15px;
+    margin-left: 10px;
     padding: 5px;
     border: none;
     cursor: pointer;
@@ -71,7 +79,6 @@
     flex-direction: column;
     align-items: center;
     margin-bottom: 20px;
-    
   }
   
   .side-nav .avatar {
@@ -90,7 +97,7 @@
  
   .side-nav p {
     margin: 10px;
-    color: white;
+    color: rgb(0, 0, 0);
   }
   
  
