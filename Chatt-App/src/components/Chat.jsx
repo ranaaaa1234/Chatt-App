@@ -93,7 +93,7 @@ const Chat = () => {
         text: sanitizedMessage,
         avatar: user.avatar,
         username: user.username,
-        id: user.id, // Ensure userId is saved locally too
+        userId: user.id, // Ensure userId is saved locally too
         conversationID: conversationID
       }]);
       setNewMessage('')

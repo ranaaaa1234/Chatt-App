@@ -54,15 +54,18 @@
   background-color: #333;
   margin-bottom: 15px;
   padding: 10px;
-  border-bottom: 1px solid #767676;
 }
 
 .my-message {
   text-align: right;
+  background-color: rgb(36, 34, 34);
+  border: 1px solid #ff00fb;;
 }
 
 .other-message {
   text-align: left;
+  background-color: rgb(48, 45, 45);
+  border: 1px solid rgb(255, 0, 0);
 }
 
 /* Form to send new messages */
