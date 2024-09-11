@@ -61,7 +61,6 @@ const Chat = () => {
     if (newMessage.trim().length === 0) return; // Check if message is not empty
 
     const sanitizedMessage = DOMPurify.sanitize(newMessage); // Sanitize message
-    
 
     console.log('Sending message to conversation Id:', conversationID);
 
@@ -74,7 +73,7 @@ const Chat = () => {
           text: sanitizedMessage, // Message text
           avatar: user.avatar, // User avatar from AuthContext
           username: user.username, // User name from AuthContext
-          id: user.id,
+          //id: user.id,
           conversationID: conversationID // conversationId (dynamic or static)
         },
         {
@@ -89,14 +88,15 @@ const Chat = () => {
       console.log('Message sent successfully:', response);
 
       // Optionally update local state to reflect sent message
-      setMessages(prevMessages => [...prevMessages, {
+      setMessages(prevMessages => 
+        [...prevMessages, {
         text: sanitizedMessage,
         avatar: user.avatar,
         username: user.username,
         id: user.id, // Ensure userId is saved locally too
         conversationID: conversationID
       }]);
-      setNewMessage('');
+      setNewMessage('')
     } catch (error) {
       console.error('Failed to send message:', error.response ? error.response.data : error.message);
     }
@@ -106,10 +106,10 @@ const Chat = () => {
     <div className="chat-container">
       <div className="messages">
         {messages.map((msg, index) => (
-          <div key={index} className={`message ${msg.id === user.id ? 'my-message' : 'other-message'}`}>
+          <div key={index} className={`message ${msg.userId === user.id ? 'my-message' : 'other-message'}`}>
             <div className="message-header">
               <img className="avatar" src={msg.avatar} alt={msg.username} />
-              <p className="username">{msg.username}</p>
+              <p className="username">{user.username}</p>
             </div>
             <div className="msgText"><p>{msg.text}</p></div>
           </div>

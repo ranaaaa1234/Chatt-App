@@ -137,7 +137,7 @@ const Message = mongoose.model('Message', messageSchema);
 
 //Conversation Schema
 const conversationSchema = new mongoose.Schema({
-userId: { type: mongoose.Schema.Types.ObjectId, ref: 'User', required: true },
+userId: { type: mongoose.Schema.Types.ObjectId, ref: 'user', required: true },
 conversationID: { type: String, required: true }
 });
 
@@ -181,7 +181,15 @@ app.post('/messages', verifyToken, async (req, res) => {
 
   try {
     const savedMessage = await newMessage.save();
-    res.status(201).json({ id: savedMessage._id, ...savedMessage._doc });
+    res.status(201).json({ 
+      id: savedMessage._id, 
+      text: savedMessage.text,
+      avatar: savedMessage.avatar,
+      username: savedMessage.username,
+      userId: savedMessage.userId,
+      conversationID: savedMessage.conversationID,
+      createdAt: savedMessage.createdAt
+    });
   } catch (error) {
     console.error(error);
     res.status(500).send('There was a problem creating the message.');
@@ -205,18 +213,4 @@ app.get('/messages', verifyToken, async (req, res) => {
 });
 
 // Delete Message Route
-app.delete('/messages/:id', verifyToken, async (req, res) => {
-  const messageId = req.params.id;
-  try {
-    const message = await Message.findById(messageId);
-    if (!message) return res.status(404).send('Message not found.');
 
-    if (message.userId.toString() !== req.userId) return res.status(403).send('Unauthorized.');
-
-    await Message.findByIdAndDelete(messageId);
-    res.status(200).send('Message deleted successfully.');
-  } catch (error) {
-    console.error(error);
-    res.status(500).send('There was a problem deleting the message.');
-  }
-});
