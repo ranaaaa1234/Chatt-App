@@ -59,13 +59,13 @@
 .my-message {
   text-align: right;
   background-color: rgb(36, 34, 34);
-  border: 1px solid #ff00fb;;
+  border-left: 1px solid #ff00fb;;
 }
 
 .other-message {
   text-align: left;
   background-color: rgb(48, 45, 45);
-  border: 1px solid rgb(255, 0, 0);
+  border-left: 1px solid rgb(255, 0, 0);
 }
 
 /* Form to send new messages */
@@ -107,10 +107,20 @@
   background-color: #ff00fb;
 }
 
-#delete-Btn {
+.deleteBtn {
   border: none;
-  background-color: #e0e0e0;
+  background-color: #e0e0e000;
   cursor: pointer;
+  color: rgba(255, 255, 255, 0.217);
+}
+
+.deleteBtn:hover {
+  opacity: 0.9;
+  color: red;
+}
+.deleteBtn:active {
+  opacity: 0.7;
+  color: red;
 }
 
 .msgText {

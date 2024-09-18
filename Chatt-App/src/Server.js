@@ -59,7 +59,7 @@ app.post('/register', async (req, res) => {
       username,
       password: hashedPassword,
       email,
-      avatar: avatar || 'https://i.pravatar.cc' // <-- Default avatar if not provided
+      avatar: 'https://i.pravatar.cc'
     });
     await newUser.save();
 
@@ -175,7 +175,7 @@ app.post('/messages', verifyToken, async (req, res) => {
     text,
     avatar: req.avatar,        // Automatically use avatar from the token
     username: req.username,    // Automatically use username from the token
-    userId: req.userId,        // Automatically use userId from the token
+    userId: req.id,        // Automatically use userId from the token
     conversationID
   });
 
@@ -213,4 +213,22 @@ app.get('/messages', verifyToken, async (req, res) => {
 });
 
 // Delete Message Route
+app.delete('/messages/:msgId', async (req, res) => {
+  const { msgId } = req.params; // Extract msgId from URL parameters
+
+  try {
+    const deleteMessage = await Message.findByIdAndDelete(msgId);
+
+    if (!deleteMessage) {
+      return res.status(404).json({ message: 'Message not found' });
+    }
+
+    res.status(200).json({ message: 'Message deleted successfully' });
+  } catch (error) {
+    console.error('Error deleting message:', error);
+    res.status(500).json({ message: 'Failed to delete message' });
+  }
+});
+
+module.exports = router;
 

@@ -17,7 +17,7 @@ export const AuthProvider = ({ children }) => {
         id: decodedToken.id,
         username: decodedToken.user,
         email: decodedToken.email,
-        avatar: decodedToken.avatar
+        avatar: decodedToken.avatar || 'https://i.pravatar.cc',
       });
       setIsAuthenticated(true);
       localStorage.setItem('jwtToken', token);
@@ -56,7 +56,7 @@ export const AuthProvider = ({ children }) => {
         id: decodedToken.id,
         username: decodedToken.user,
         email: decodedToken.email,
-        avatar: decodedToken.avatar
+        avatar: decodedToken.avatar || 'https://i.pravatar.cc',
       });
       setIsAuthenticated(true);
       localStorage.setItem('jwtToken', token); // Store JWT token in localStorage

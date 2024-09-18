@@ -37,7 +37,7 @@ const SideNav = () => {
 
         {user && ( // Ensure authUser is present and has username
           <div className="user-info">
-            <img src={user.avatar} alt="User Avatar" className="avatar" />
+            <img src={user.avatar}  className="avatar" />
             <div className='username-text'> 
               <p>Welcome to Chatify</p>
               <p>{user.username || 'No Username Available'}</p> {/* Fallback if username is missing */}
