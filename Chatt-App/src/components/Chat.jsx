@@ -1,5 +1,5 @@
 import React, { useEffect, useState, useRef } from 'react'; 
-import axios from 'axios'; 
+import axios from './axios'; 
 import '../Styling/Chat.css'; 
 import DOMPurify from 'dompurify'; 
 import { useAuth } from './AuthContext';
